@@ -3,7 +3,7 @@ const PaymentLink = require('../model/paymentSchema');
 const PaymentSession  =  require("../model/paymentSessionSchema")
 const { v4: uuidv4 } = require('uuid');
 const User  =  require("../model/UserModel");
-const { checkTxStatus } = require('../lib/CheckTxStatus');
+const { checkTxStatus, checkItxStatus } = require('../lib/CheckTxStatus');
 const { sendEmail, sendMail2 } = require('../helper/sendEmail');
 const Invoice = require('../model/invoice-schema');
 const CheckoutSession  =  require("../model/checkout-session")
@@ -270,7 +270,7 @@ const sendPaymentNotification = async (user, paymentSession, txResult) => {
 const monitorTransactionStatus = async (transactionHash, paymentSession, io, user) => {
   const interval = setInterval(async () => {
     // Check transaction status
-    const txResult = await checkTxStatus(transactionHash);
+    const txResult = await checkItxStatus(transactionHash);
 
     if (txResult === 'SUCCESS') {
       // Handle successful transaction - update the status to completed

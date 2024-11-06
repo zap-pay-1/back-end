@@ -1,7 +1,7 @@
 const asyncHandler =  require("express-async-handler")
 const  Invoice  =  require("../model/invoice-schema")
 const Customer =  require("../model/customer-schema")
-const { checkTxStatus } = require('../lib/CheckTxStatus');
+const { checkTxStatus, checkItxStatus } = require('../lib/CheckTxStatus');
 const {Network,Aptos, AptosConfig, convertAmountFromHumanReadableToOnChain}   =  require("@aptos-labs/ts-sdk");
 const { sendMail2 } = require("../helper/sendEmail");
 
@@ -187,6 +187,9 @@ const initiatePaymentSession = asyncHandler(async (req, res) => {
 
 
 
+
+//  EXPERIMANTAL 
+
 // @desc    Initiate blockchain tx
 // @route   POST /api/payment/invoice/buildtx
 // @access  Public
@@ -248,22 +251,16 @@ if (!invoice) {
 if(! txHash){
   io.emit('invoiceStatus', {
     status : "FAILED",
-    invoiceId : invoiceId
+    invoiceId : invoiceId,
+    message : "No transaction Hash"
   });
   res.status(400).json({message :  "Please provide transaction hash"})
   throw  new Error("no transaction hash provided  please check blockchain status")
  
 }
-
  // const  reciever  =  await User.findById(paymentSession.paymentLinkId.userId)
-
  /// const user = await User.findById(paymentSession.paymentLinkId.userId);
-
-  
-
-
-
-     // UPDATE_USER_DETAILS_AND_TX_STATUS
+   // UPDATE_USER_DETAILS_AND_TX_STATUS
 
        // Find and update the PaymentSession document
        const updatedInvoice = await Invoice.findByIdAndUpdate(
@@ -271,16 +268,12 @@ if(! txHash){
         {    status : "PENDING", txHash : txHash },
         { new: true } // Return the updated document
     );
-
-
-     // console.log("updated payment  info and status", updatedPaymentSession)
-
-
+  // console.log("updated payment  info and status", updatedPaymentSession)
 
 // Monitor transaction status
 const interval = setInterval(async () => {
    
-     const  txResult  =  await  checkTxStatus(txHash)
+     const  txResult  =  await  checkItxStatus(txHash)
     console.log("the result status",  txResult)
     console.log("transaction hash", txHash)
 

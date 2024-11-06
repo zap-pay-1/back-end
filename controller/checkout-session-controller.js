@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const { v4: uuidv4 } = require('uuid');
 const User  =  require("../model/UserModel");
-const { checkTxStatus } = require('../lib/CheckTxStatus');
+const { checkTxStatus, checkItxStatus } = require('../lib/CheckTxStatus');
 const { sendMail2 } = require('../helper/sendEmail');
 const CheckoutSession  =  require("../model/checkout-session");
 const { validateSession, monitorTransactionStatus } = require('../helper/checkoutSessionUtilities');
@@ -115,7 +115,6 @@ const handleSessionCheckout = asyncHandler(async (req, res) => {
    // const user = await User.findById(paymentSession.paymentLinkId.userId);
        const email = paymentSession.merchantId.email
        validateSession(paymentSession, shippingAddress)
-        console.log("merchant", email)
     if (!transactionHash) {
       io.emit('paymentStatus', { status: "FAILED", sessionId, message : "No transaction hash provided" });
       res.status(400).json({ message: "Please provide transaction hash" });
@@ -140,9 +139,9 @@ const handleSessionCheckout = asyncHandler(async (req, res) => {
   const monitorTransactionStatus2 = async (transactionHash, io,) => {
     const interval = setInterval(async () => {
       // Check transaction status
-      const txResult = await checkTxStatus(transactionHash);
-  
-      if (txResult === 'SUCCESS') {
+      const txResult = await checkItxStatus(transactionHash);
+    console.log("transaction result", txResult)
+     /* if (txResult === 'SUCCESS') {
         // Handle successful transaction - update the status to completed
      console.log("transction success", transactionHash)
     console.log("transaction results", txResult)
@@ -159,7 +158,8 @@ const handleSessionCheckout = asyncHandler(async (req, res) => {
           console.log("transaction fauled", txResult)
         io.emit('paymentStatus', { status: "FAILED" });
         clearInterval(interval);
-      }
+      }*/
+        clearInterval(interval);
     }, 30000); // Check every 30 seconds
   };
 

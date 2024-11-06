@@ -1,6 +1,6 @@
 
 
-const { checkTxStatus } = require("../lib/CheckTxStatus");
+const { checkTxStatus, checkItxStatus } = require("../lib/CheckTxStatus");
 const CheckoutSession = require("../model/checkout-session");
 const { sendMail2 } = require("./sendEmail");
 
@@ -36,7 +36,7 @@ const validateSession = (paymentSession, shippingAddress) => {
   const monitorTransactionStatus = async (transactionHash, paymentSession, io, email) => {
     const interval = setInterval(async () => {
       // Check transaction status
-      const txResult = await checkTxStatus(transactionHash);
+      const txResult = await checkItxStatus(transactionHash);
   
       if (txResult === 'SUCCESS') {
         // Handle successful transaction - update the status to completed
